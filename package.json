@@ -17,6 +17,9 @@
     "forge-apis": "*",
     "fs": "*"
   },
+  "engines": {
+    "node": "*"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/adamenagy/model.derivative-nodejs-viewer"
