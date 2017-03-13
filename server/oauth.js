@@ -81,6 +81,7 @@ router.get('/user/refreshedtoken', function (req, res) {
                 config.credentials.client_secret,
                 config.callbackURL,
                 config.scopePublic);
+            /* Using setTimeout just for easier testing of multiple request coming in at the same time
             setTimeout(function () {
                 auth.refreshToken({refresh_token: refresh_token})
                     .then(function (publicCredentials) {
@@ -115,6 +116,39 @@ router.get('/user/refreshedtoken', function (req, res) {
                         isRefreshing = false;
                     });
             }, 3000);
+            */
+            auth.refreshToken({refresh_token: refresh_token})
+                .then(function (publicCredentials) {
+                    storeRefreshToken(publicCredentials.refresh_token);
+                    var tokenSession = new token(req.session);
+                    tokenSession.setPublicCredentials(publicCredentials);
+                    tokenSession.setPublicOAuth(auth);
+                    var tp = tokenSession.getPublicCredentials() ? tokenSession.getPublicCredentials().access_token : "";
+                    var te = tokenSession.getPublicCredentials() ? tokenSession.getPublicCredentials().expires_in : "";
+                    console.log('Public token:' + tp);
+                    res.json({ token: tp, expires_in: te });
+
+                    for (var key in requestsToCallBack) {
+                        var item = requestsToCallBack[key];
+                        item.json({ token: tp, expires_in: te });
+                        console.log("/user/refreshedtoken - callback - data");
+                    }
+                    requestsToCallBack = [];
+                    console.log("isRefreshing = false");
+                    isRefreshing = false;
+                })
+                .catch(function (error) {
+                    res.end(JSON.stringify(error));
+
+                    for (var key in requestsToCallBack) {
+                        var item = requestsToCallBack[key];
+                        item.end(JSON.stringify(error));
+                        console.log("/user/refreshedtoken - callback - error");
+                    }
+                    requestsToCallBack = [];
+                    console.log("isRefreshing = false");
+                    isRefreshing = false;
+                });
         })
     }
 });
