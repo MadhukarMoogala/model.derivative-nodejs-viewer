@@ -1,5 +1,5 @@
 {
-  "name": "derivative-service-node.js-sample",
+  "name": "derivative-service-node.js-viewer",
   "version": "1.0.0",
   "description": "A sample that shows how to use the Model Derivative API.",
 
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/developer-autodesk/model.derivative-nodejs-sample"
+    "url": "git://github.com/adamenagy/model.derivative-nodejs-viewer"
   },
   "scripts": {
     "start" : "NODE_ENV=production node start.js",
